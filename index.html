@@ -6,1185 +6,875 @@
 <title>World-Class SWE Roadmap — Age of AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #050810;
-    --surface: #0c1120;
-    --surface2: #111827;
-    --border: rgba(255,255,255,0.07);
-    --accent1: #00f5c4;
-    --accent2: #6c6fff;
-    --accent3: #f97316;
-    --accent4: #f43f5e;
-    --accent5: #eab308;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --font-display: 'Syne', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-display);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,245,196,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,245,196,0.025) 1px, transparent 1px);
-    background-size: 48px 48px;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  /* Glow orbs */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
-    animation: drift 20s ease-in-out infinite;
-  }
-  .orb1 { width: 600px; height: 600px; background: var(--accent2); top: -200px; right: -200px; animation-delay: 0s; }
-  .orb2 { width: 400px; height: 400px; background: var(--accent1); bottom: 200px; left: -100px; animation-delay: -7s; }
-  .orb3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; right: 100px; animation-delay: -14s; }
-
-  @keyframes drift {
-    0%, 100% { transform: translate(0, 0); }
-    33% { transform: translate(30px, -30px); }
-    66% { transform: translate(-20px, 20px); }
-  }
-
-  /* Layout */
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
-  /* Header */
-  header {
-    text-align: center;
-    padding: 72px 0 56px;
-    position: relative;
-  }
-
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,245,196,0.08);
-    border: 1px solid rgba(0,245,196,0.2);
-    border-radius: 100px;
-    padding: 6px 16px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent1);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-
-  .header-badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--accent1);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
-  header h1 {
-    font-size: clamp(2.4rem, 5vw, 4rem);
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.6) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  header h1 span {
-    background: linear-gradient(135deg, var(--accent1), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  header p {
-    font-size: 1rem;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    max-width: 520px;
-    margin: 0 auto 36px;
-    line-height: 1.7;
-  }
-
-  /* Stats bar */
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 60px;
-  }
-
-  .stat-chip {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 18px;
-    font-size: 13px;
-  }
-
-  .stat-chip .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-  }
-
-  .stat-chip .label { color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
-  .stat-chip .val { font-weight: 700; font-size: 14px; }
-
-  /* Timeline spine */
-  .timeline {
-    position: relative;
-    padding-left: 0;
-  }
-
-  .timeline-spine {
-    position: absolute;
-    left: 50%;
-    top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, transparent, var(--accent1) 5%, var(--accent2) 50%, var(--accent3) 95%, transparent);
-    transform: translateX(-50%);
-    opacity: 0.3;
-  }
-
-  /* Phase blocks */
-  .phase {
-    position: relative;
-    margin-bottom: 12px;
-  }
-
-  /* Phase header / toggle */
-  .phase-header {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  /* Alternating left/right */
-  .phase:nth-child(odd) .phase-header { flex-direction: row; }
-  .phase:nth-child(even) .phase-header { flex-direction: row-reverse; }
-
-  /* Center node */
-  .phase-node {
-    position: relative;
-    z-index: 2;
-    flex-shrink: 0;
-    width: 60px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .phase-icon {
-    width: 48px; height: 48px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    border: 1px solid;
-    transition: transform 0.2s, box-shadow 0.2s;
-    flex-shrink: 0;
-  }
-
-  .phase-header:hover .phase-icon {
-    transform: scale(1.08);
-  }
-
-  .phase-number {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-  }
-
-  /* Phase card */
-  .phase-card {
-    flex: 1;
-    max-width: calc(50% - 54px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 22px 24px;
-    transition: border-color 0.25s, background 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .phase-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  .phase-header:hover .phase-card::before,
-  .phase.open .phase-card::before {
-    opacity: 1;
-  }
-
-  .phase.open .phase-card {
-    border-color: rgba(255,255,255,0.12);
-    background: var(--surface2);
-  }
-
-  .phase-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .phase-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .phase-duration {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-  }
-
-  .phase-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-  }
-
-  .phase-subtitle {
-    font-size: 11.5px;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-
-  .chevron {
-    font-size: 14px;
-    color: var(--muted);
-    transition: transform 0.3s;
-    flex-shrink: 0;
-  }
-
-  .phase.open .chevron { transform: rotate(180deg); }
-
-  /* Tags */
-  .tag-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 12px;
-  }
-
-  .tag {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 100px;
-    border: 1px solid;
-    letter-spacing: 0.06em;
-  }
-
-  /* Expanded content */
-  .phase-body {
-    display: none;
-    padding: 20px 24px 0;
-  }
-
-  .phase.open .phase-body { display: block; }
-
-  /* Topic grid */
-  .topic-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .topic-item {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-
-  .topic-icon {
-    font-size: 16px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .topic-name {
-    font-size: 12.5px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    letter-spacing: -0.01em;
-  }
-
-  .topic-detail {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    line-height: 1.55;
-  }
-
-  /* Resources */
-  .resources-header {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin: 20px 0 10px;
-  }
-
-  .resource-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .resource-pill {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 5px 12px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* Divider inside expanded */
-  .body-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 20px 0;
-  }
-
-  /* Connector lines (left/right arrow) */
-  .connector {
-    width: 30px;
-    height: 2px;
-    flex-shrink: 0;
-    opacity: 0.25;
-  }
-
-  .phase:nth-child(odd) .connector { background: linear-gradient(to right, var(--accent1), transparent); }
-  .phase:nth-child(even) .connector { background: linear-gradient(to left, var(--accent1), transparent); }
-
-  /* Bottom CTA */
-  .cta-section {
-    text-align: center;
-    margin-top: 60px;
-    padding: 48px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cta-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center top, rgba(0,245,196,0.06) 0%, transparent 60%);
-  }
-
-  .cta-section h2 {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin-bottom: 12px;
-  }
-
-  .cta-section p {
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
-  /* Progress tracker */
-  .progress-section {
-    margin-bottom: 48px;
-  }
-
-  .progress-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .progress-track {
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 100px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(to right, var(--accent1), var(--accent2));
-    border-radius: 100px;
-    width: 0%;
-    transition: width 1s ease;
-  }
-
-  /* Phase-specific accent colors */
-  .p1 { --pc: #00f5c4; }
-  .p2 { --pc: #6c6fff; }
-  .p3 { --pc: #f97316; }
-  .p4 { --pc: #f43f5e; }
-  .p5 { --pc: #eab308; }
-  .p6 { --pc: #a855f7; }
-  .p7 { --pc: #06b6d4; }
-
-  .phase-icon { background: color-mix(in srgb, var(--pc) 12%, transparent); border-color: color-mix(in srgb, var(--pc) 30%, transparent); }
-  .phase-card::before { background: linear-gradient(to right, var(--pc), transparent); }
-  .tag { background: color-mix(in srgb, var(--pc) 10%, transparent); border-color: color-mix(in srgb, var(--pc) 30%, transparent); color: var(--pc); }
-  .phase-title { color: color-mix(in srgb, var(--pc) 80%, white); }
-
-  /* Mobile responsive */
-  @media (max-width: 700px) {
-    .timeline-spine { display: none; }
-    .phase-header, .phase:nth-child(even) .phase-header { flex-direction: column; align-items: flex-start; }
-    .phase-card { max-width: 100%; }
-    .phase-node { flex-direction: row; width: auto; }
-    .connector { display: none; }
-    .topic-grid { grid-template-columns: 1fr; }
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #060912;
+  --surface: #0d1424;
+  --surface2: #131c30;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --c1: #00f5c4;   /* teal */
+  --c2: #6c6fff;   /* indigo */
+  --c3: #f97316;   /* orange */
+  --c4: #f43f5e;   /* rose */
+  --c5: #eab308;   /* yellow */
+  --c6: #a855f7;   /* purple */
+  --c7: #22d3ee;   /* cyan */
+  --text: #dde4f0;
+  --muted: #566175;
+  --muted2: #8896aa;
+  --ff: 'Syne', sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,245,196,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,196,0.018) 1px, transparent 1px);
+  background-size: 56px 56px;
+  pointer-events: none; z-index: 0;
+}
+
+/* Ambient glow orbs */
+.orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+.orb1 { width: 700px; height: 700px; background: rgba(108,111,255,0.08); top: -300px; right: -200px; }
+.orb2 { width: 500px; height: 500px; background: rgba(0,245,196,0.05); bottom: 0; left: -150px; }
+
+/* Layout */
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+/* ─── HEADER ─── */
+header {
+  padding: 72px 0 64px;
+  position: relative;
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--fm); font-size: 10.5px;
+  color: var(--c1); letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(0,245,196,0.07);
+  border: 1px solid rgba(0,245,196,0.18);
+  border-radius: 100px; padding: 5px 14px;
+  margin-bottom: 24px;
+}
+.badge span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--c1);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+header h1 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 800; line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: #fff; margin-bottom: 16px;
+}
+header h1 em {
+  font-style: normal;
+  background: linear-gradient(110deg, var(--c1) 0%, var(--c2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tagline {
+  font-family: var(--fm); font-size: 12px;
+  color: var(--muted2); line-height: 1.8; max-width: 460px;
+}
+
+/* ─── OVERVIEW STATS ─── */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin-bottom: 56px;
+}
+@media(max-width:600px){ .stats{ grid-template-columns: repeat(2,1fr); } }
+
+.stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+}
+.stat .s-label {
+  font-family: var(--fm); font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.stat .s-val {
+  font-size: 14px; font-weight: 700;
+  color: var(--text); line-height: 1.3;
+}
+.stat .s-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  display: inline-block; margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ─── PHASE LEGEND ─── */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 40px;
+}
+.leg-item {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--fm); font-size: 10px;
+  color: var(--muted2); cursor: pointer;
+  padding: 5px 10px; border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.leg-item:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.03); }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── TIMELINE TRACK ─── */
+.timeline {
+  position: relative;
+  padding-left: 52px;
+}
+
+/* Vertical spine — full left side */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px; top: 12px; bottom: 0;
+  width: 1.5px;
+  background: linear-gradient(to bottom,
+    var(--c1) 0%, var(--c2) 30%,
+    var(--c3) 55%, var(--c4) 75%,
+    var(--c5) 88%, var(--c6) 94%, var(--c7) 100%);
+  opacity: 0.2;
+}
+
+/* ─── SINGLE PHASE ─── */
+.phase {
+  position: relative;
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.phase.visible { opacity: 1; transform: translateX(0); }
+
+/* Node on spine */
+.phase-node {
+  position: absolute;
+  left: -40px; top: 24px;
+  width: 40px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.node-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; border: 1px solid;
+  background: var(--bg);
+  transition: transform 0.2s, box-shadow 0.25s;
+  flex-shrink: 0;
+  position: relative; z-index: 2;
+}
+.phase:hover .node-icon, .phase.open .node-icon {
+  transform: scale(1.1);
+}
+.node-num {
+  font-family: var(--fm); font-size: 9px;
+  color: var(--muted); letter-spacing: 0.06em;
+}
+
+/* Card */
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  cursor: pointer;
+}
+.phase-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.3);
+}
+.phase.open .phase-card {
+  border-color: rgba(255,255,255,0.1);
+  background: var(--surface2);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.4);
+}
+
+/* Colored top bar — accent line */
+.phase-topbar {
+  height: 3px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+.phase.open .phase-topbar,
+.phase-card:hover .phase-topbar { width: 100%; }
+
+/* Card header */
+.card-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px;
+  padding: 20px 22px 18px;
+}
+
+.card-meta { flex: 1; min-width: 0; }
+.card-duration {
+  font-family: var(--fm); font-size: 9.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.card-title {
+  font-size: 1.05rem; font-weight: 700;
+  line-height: 1.2; letter-spacing: -0.015em;
+  margin-bottom: 5px;
+}
+.card-sub {
+  font-family: var(--fm); font-size: 11px;
+  color: var(--muted2); line-height: 1.6;
+}
+
+/* Tags */
+.tags {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding: 0 22px 18px;
+}
+.tag {
+  font-family: var(--fm); font-size: 9.5px;
+  padding: 3px 10px; border-radius: 100px;
+  border: 1px solid; letter-spacing: 0.06em;
+}
+
+/* Chevron */
+.chevron {
+  font-size: 13px; color: var(--muted);
+  transition: transform 0.3s, color 0.2s;
+  flex-shrink: 0; margin-top: 4px;
+}
+.phase.open .chevron { transform: rotate(180deg); color: var(--text); }
+
+/* ─── EXPANDED BODY ─── */
+.phase-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.phase.open .phase-body { max-height: 900px; }
+
+.body-inner {
+  padding: 4px 22px 22px;
+  border-top: 1px solid var(--border);
+}
+
+/* Topic grid — 2 cols */
+.topic-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 20px; padding-top: 18px;
+}
+@media(max-width:500px){ .topic-grid{ grid-template-columns: 1fr; } }
+
+.topic {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 13px 14px;
+  display: flex; gap: 11px; align-items: flex-start;
+  transition: background 0.2s, border-color 0.2s;
+}
+.topic:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border-hover);
+}
+.t-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.t-name { font-size: 12.5px; font-weight: 700; margin-bottom: 3px; letter-spacing: -0.01em; }
+.t-detail { font-family: var(--fm); font-size: 10.5px; color: var(--muted2); line-height: 1.6; }
+
+/* Resources */
+.res-label {
+  font-family: var(--fm); font-size: 9.5px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.res-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.rpill {
+  font-family: var(--fm); font-size: 10.5px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 5px 12px; color: var(--text);
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* ─── PER-PHASE COLORS ─── */
+.p1 { --pc: var(--c1); }
+.p2 { --pc: var(--c2); }
+.p3 { --pc: var(--c3); }
+.p4 { --pc: var(--c4); }
+.p5 { --pc: var(--c5); }
+.p6 { --pc: var(--c6); }
+.p7 { --pc: var(--c7); }
+
+.node-icon {
+  background: color-mix(in srgb, var(--pc) 10%, var(--bg));
+  border-color: color-mix(in srgb, var(--pc) 25%, transparent);
+}
+.phase.open .node-icon, .phase:hover .node-icon {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--pc) 30%, transparent);
+}
+.phase-topbar { background: linear-gradient(to right, var(--pc), color-mix(in srgb, var(--pc) 30%, transparent)); }
+.card-title { color: color-mix(in srgb, var(--pc) 70%, white 30%); }
+.tag { background: color-mix(in srgb, var(--pc) 8%, transparent); border-color: color-mix(in srgb, var(--pc) 22%, transparent); color: var(--pc); }
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap {
+  margin-bottom: 48px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+}
+.prog-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.prog-title { font-size: 13px; font-weight: 700; }
+.prog-count { font-family: var(--fm); font-size: 10px; color: var(--muted2); }
+.prog-track {
+  height: 5px; background: rgba(255,255,255,0.05);
+  border-radius: 100px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--c1), var(--c2), var(--c3));
+  border-radius: 100px;
+  width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── CTA FOOTER ─── */
+.cta {
+  margin-top: 48px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,245,196,0.05), transparent 60%);
+  pointer-events: none;
+}
+.cta h2 {
+  font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 10px;
+}
+.cta h2 span { color: var(--c1); }
+.cta p {
+  font-family: var(--fm); font-size: 11.5px;
+  color: var(--muted2); max-width: 380px;
+  margin: 0 auto 28px; line-height: 1.8;
+}
+.habits {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+}
+.habit {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 16px; text-align: left;
+}
+.habit .h-freq { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.habit .h-text { font-size: 12.5px; font-weight: 600; }
+
+/* ─── PSYCHOLOGY LABELS ─── (subtle, educational) */
+.psych-label {
+  position: absolute; right: 22px; top: 24px;
+  font-family: var(--fm); font-size: 9px;
+  color: var(--muted); letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+/* Expand all toggle */
+.ctrl-row {
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin-bottom: 16px;
+}
+.ctrl-btn {
+  font-family: var(--fm); font-size: 10px;
+  color: var(--muted2); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 14px; cursor: pointer;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: color 0.2s, border-color 0.2s;
+}
+.ctrl-btn:hover { color: var(--text); border-color: var(--border-hover); }
+
+/* Scroll hint arrow */
+.scroll-hint {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; margin-top: 40px; margin-bottom: 0;
+  animation: bounce 2s ease-in-out infinite;
+  opacity: 0.35;
+}
+.scroll-hint span { font-family: var(--fm); font-size: 9px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
 </style>
 </head>
 <body>
 
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
-<div class="orb orb3"></div>
 
-<div class="container">
+<div class="wrap">
 
+  <!-- ── HEADER ── -->
   <header>
-    <div class="header-badge">2.5 yrs exp → World-Class Engineer</div>
-    <h1>Your Roadmap to<br><span>World-Class SWE</span><br>in the Age of AI</h1>
-    <p>// A structured journey from solid engineer → interview-ready + AI-native + big tech ready</p>
+    <div class="badge"><span></span> 2.5 yrs exp → World-Class Engineer</div>
+    <h1>Your Roadmap to<br><em>World-Class SWE</em><br>in the Age of AI</h1>
+    <p class="tagline">// A structured 12–18 month journey → interview-ready, AI-native, big-tech-ready</p>
+    <div class="scroll-hint">
+      <span>Scroll to explore</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M3 9l4 4 4-4" stroke="#566175" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
   </header>
 
-  <div class="stats-bar">
-    <div class="stat-chip">
-      <div class="dot" style="background:#00f5c4"></div>
-      <span class="label">Timeline</span>
-      <span class="val">12–18 Months</span>
+  <!-- ── STATS ── -->
+  <div class="stats">
+    <div class="stat">
+      <div class="s-label">Timeline</div>
+      <div class="s-val"><span class="s-dot" style="background:var(--c1)"></span>12–18 Months</div>
     </div>
-    <div class="stat-chip">
-      <div class="dot" style="background:#6c6fff"></div>
-      <span class="label">Phases</span>
-      <span class="val">7 Phases</span>
+    <div class="stat">
+      <div class="s-label">Phases</div>
+      <div class="s-val"><span class="s-dot" style="background:var(--c2)"></span>7 Phases</div>
     </div>
-    <div class="stat-chip">
-      <div class="dot" style="background:#f97316"></div>
-      <span class="label">Focus Areas</span>
-      <span class="val">DSA · System Design · AI · Projects</span>
+    <div class="stat">
+      <div class="s-label">Solved Problems</div>
+      <div class="s-val"><span class="s-dot" style="background:var(--c3)"></span>300+ LeetCode</div>
     </div>
-    <div class="stat-chip">
-      <div class="dot" style="background:#f43f5e"></div>
-      <span class="label">Target</span>
-      <span class="val">FAANG / Big Tech / Founding Eng</span>
+    <div class="stat">
+      <div class="s-label">Target</div>
+      <div class="s-val"><span class="s-dot" style="background:var(--c4)"></span>FAANG / Startup</div>
     </div>
   </div>
 
-  <div class="timeline">
-    <div class="timeline-spine"></div>
-
-    <!-- PHASE 1 -->
-    <div class="phase p1 open" onclick="toggle(this)">
-      <div class="phase-header">
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 1–2 · FOUNDATION</div>
-              <div class="phase-title">CS Core & Engineering Fundamentals</div>
-              <div class="phase-subtitle">Fill the gaps. Build the bedrock that everything else stands on.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">OS</span>
-            <span class="tag">Networks</span>
-            <span class="tag">Memory</span>
-            <span class="tag">Compilers</span>
-            <span class="tag">Concurrency</span>
-          </div>
-          <div class="phase-body" onclick="e=>e.stopPropagation()">
-            <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">🧠</div>
-                <div>
-                  <div class="topic-name">Operating Systems</div>
-                  <div class="topic-detail">Processes, threads, memory management, scheduling, file systems, IPC</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🌐</div>
-                <div>
-                  <div class="topic-name">Computer Networks</div>
-                  <div class="topic-detail">TCP/IP, HTTP/2/3, DNS, TLS, WebSockets, CDN internals</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">⚡</div>
-                <div>
-                  <div class="topic-name">Concurrency & Parallelism</div>
-                  <div class="topic-detail">Mutex, semaphores, deadlocks, goroutines, async/await models</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">💾</div>
-                <div>
-                  <div class="topic-name">Memory & Storage</div>
-                  <div class="topic-detail">Heap vs stack, GC, virtual memory, page faults, cache hierarchy</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔧</div>
-                <div>
-                  <div class="topic-name">Compilers Basics</div>
-                  <div class="topic-detail">Lexing, parsing, AST, IR, how code becomes machine instructions</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">📐</div>
-                <div>
-                  <div class="topic-name">Database Internals</div>
-                  <div class="topic-detail">B-trees, WAL, MVCC, indexing strategies, ACID, isolation levels</div>
-                </div>
-              </div>
-            </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">📖 OSTEP (free)</span>
-              <span class="resource-pill">📖 Computer Networks — Tanenbaum</span>
-              <span class="resource-pill">🎥 MIT 6.824 Distributed Systems</span>
-              <span class="resource-pill">📖 Designing Data-Intensive Apps</span>
-              <span class="resource-pill">🎥 CMU DB Course</span>
-            </div>
-          </div>
-        </div>
-        <div class="connector"></div>
-        <div class="phase-node">
-          <div class="phase-icon">⚙️</div>
-          <div class="phase-number">01</div>
-        </div>
-        <div class="connector" style="opacity:0"></div>
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
-      </div>
+  <!-- ── PROGRESS ── -->
+  <div class="progress-wrap">
+    <div class="prog-header">
+      <div class="prog-title">Overall Journey Progress</div>
+      <div class="prog-count" id="prog-text">0 / 7 phases</div>
     </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
 
-    <!-- PHASE 2 -->
-    <div class="phase p2" onclick="toggle(this)">
-      <div class="phase-header">
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
-        <div class="connector" style="opacity:0"></div>
-        <div class="phase-node">
-          <div class="phase-icon">🧩</div>
-          <div class="phase-number">02</div>
+  <!-- ── CONTROLS ── -->
+  <div class="ctrl-row">
+    <button class="ctrl-btn" onclick="expandAll()">Expand All</button>
+    <button class="ctrl-btn" onclick="collapseAll()">Collapse All</button>
+  </div>
+
+  <!-- ── TIMELINE ── -->
+  <div class="timeline" id="timeline">
+
+    <!-- Phase 1 -->
+    <div class="phase p1" data-phase="1">
+      <div class="phase-node">
+        <div class="node-icon">⚙️</div>
+        <div class="node-num">01</div>
+      </div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 1–2 · Foundation</div>
+            <div class="card-title">CS Core & Engineering Fundamentals</div>
+            <div class="card-sub">Fill the gaps. Build the bedrock that everything else stands on.</div>
+          </div>
+          <div class="chevron">▾</div>
         </div>
-        <div class="connector"></div>
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 1–4 · PARALLEL TRACK</div>
-              <div class="phase-title">DSA Mastery — Interview Ready</div>
-              <div class="phase-subtitle">Leetcode isn't enough. Understand the WHY behind every pattern.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Arrays</span>
-            <span class="tag">Trees</span>
-            <span class="tag">Graphs</span>
-            <span class="tag">DP</span>
-            <span class="tag">Sliding Window</span>
-          </div>
-          <div class="phase-body">
+        <div class="tags">
+          <span class="tag">OS</span>
+          <span class="tag">Networks</span>
+          <span class="tag">Memory</span>
+          <span class="tag">Compilers</span>
+          <span class="tag">Concurrency</span>
+          <span class="tag">DB Internals</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
             <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">📊</div>
-                <div>
-                  <div class="topic-name">Data Structures</div>
-                  <div class="topic-detail">Arrays, strings, linked lists, stacks, queues, heaps, tries, union-find</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🌲</div>
-                <div>
-                  <div class="topic-name">Trees & Graphs</div>
-                  <div class="topic-detail">BST, AVL, segment trees, DFS/BFS, Dijkstra, Bellman-Ford, Floyd, Kruskal</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🎯</div>
-                <div>
-                  <div class="topic-name">Core Patterns</div>
-                  <div class="topic-detail">Two pointers, sliding window, binary search, monotonic stack, backtracking</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🧮</div>
-                <div>
-                  <div class="topic-name">Dynamic Programming</div>
-                  <div class="topic-detail">Memoization, tabulation, knapsack, LCS, LIS, interval DP, bitmask DP</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔢</div>
-                <div>
-                  <div class="topic-name">Math & Bit Manip</div>
-                  <div class="topic-detail">Modular arithmetic, combinatorics, GCD, bit tricks, XOR patterns</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🏆</div>
-                <div>
-                  <div class="topic-name">Target: 300+ Problems</div>
-                  <div class="topic-detail">~150 medium, ~80 hard. Grind Neetcode 150 → Blind 75 → company-tagged</div>
-                </div>
-              </div>
+              <div class="topic"><div class="t-icon">🧠</div><div><div class="t-name">Operating Systems</div><div class="t-detail">Processes, threads, memory management, scheduling, file systems, IPC</div></div></div>
+              <div class="topic"><div class="t-icon">🌐</div><div><div class="t-name">Computer Networks</div><div class="t-detail">TCP/IP, HTTP/2/3, DNS, TLS, WebSockets, CDN internals</div></div></div>
+              <div class="topic"><div class="t-icon">⚡</div><div><div class="t-name">Concurrency & Parallelism</div><div class="t-detail">Mutex, semaphores, deadlocks, goroutines, async/await models</div></div></div>
+              <div class="topic"><div class="t-icon">💾</div><div><div class="t-name">Memory & Storage</div><div class="t-detail">Heap vs stack, GC, virtual memory, page faults, cache hierarchy</div></div></div>
+              <div class="topic"><div class="t-icon">🔧</div><div><div class="t-name">Compilers Basics</div><div class="t-detail">Lexing, parsing, AST, IR, how code becomes machine instructions</div></div></div>
+              <div class="topic"><div class="t-icon">📐</div><div><div class="t-name">Database Internals</div><div class="t-detail">B-trees, WAL, MVCC, indexing strategies, ACID, isolation levels</div></div></div>
             </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">🟡 LeetCode Premium</span>
-              <span class="resource-pill">📖 CLRS (reference)</span>
-              <span class="resource-pill">🎥 Neetcode.io</span>
-              <span class="resource-pill">🎥 Abdul Bari Algorithms</span>
-              <span class="resource-pill">📖 Grokking Algorithms</span>
-              <span class="resource-pill">🏆 Codeforces (weekly)</span>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">📖 OSTEP (free)</span>
+              <span class="rpill">📖 Tanenbaum — Networks</span>
+              <span class="rpill">🎥 MIT 6.824</span>
+              <span class="rpill">📖 DDIA — Kleppmann</span>
+              <span class="rpill">🎥 CMU DB Course</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- PHASE 3 -->
-    <div class="phase p3" onclick="toggle(this)">
-      <div class="phase-header">
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 3–6 · ARCHITECTURE</div>
-              <div class="phase-title">System Design — Think at Scale</div>
-              <div class="phase-subtitle">Design systems that handle millions. Understand every tradeoff.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Scalability</span>
-            <span class="tag">Databases</span>
-            <span class="tag">Caching</span>
-            <span class="tag">Messaging</span>
-            <span class="tag">Microservices</span>
-          </div>
-          <div class="phase-body">
-            <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">🏗️</div>
-                <div>
-                  <div class="topic-name">Distributed Systems</div>
-                  <div class="topic-detail">CAP theorem, consistency models, Raft, Paxos, sharding, replication</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">⚖️</div>
-                <div>
-                  <div class="topic-name">Load Balancing & Proxies</div>
-                  <div class="topic-detail">L4/L7 LB, reverse proxy, rate limiting, circuit breakers, service mesh</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🗄️</div>
-                <div>
-                  <div class="topic-name">Storage Systems</div>
-                  <div class="topic-detail">SQL vs NoSQL, time series DBs, blob storage, columnar, LSM trees</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">⚡</div>
-                <div>
-                  <div class="topic-name">Caching Strategies</div>
-                  <div class="topic-detail">Redis, Memcached, write-through/back, eviction policies, CDN patterns</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">📨</div>
-                <div>
-                  <div class="topic-name">Messaging & Streaming</div>
-                  <div class="topic-detail">Kafka, RabbitMQ, event sourcing, CQRS, pub-sub vs queue</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔍</div>
-                <div>
-                  <div class="topic-name">Real Design Cases</div>
-                  <div class="topic-detail">Design Twitter, YouTube, Uber, WhatsApp, Google Docs, Stripe</div>
-                </div>
-              </div>
-            </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">📖 System Design Interview — Alex Xu</span>
-              <span class="resource-pill">📖 DDIA — Kleppmann</span>
-              <span class="resource-pill">🎥 Arpit Bhayani</span>
-              <span class="resource-pill">🎥 ByteByteGo</span>
-              <span class="resource-pill">🌐 highscalability.com</span>
-            </div>
-          </div>
-        </div>
-        <div class="connector"></div>
-        <div class="phase-node">
-          <div class="phase-icon">🏛️</div>
-          <div class="phase-number">03</div>
-        </div>
-        <div class="connector" style="opacity:0"></div>
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
+    <!-- Phase 2 -->
+    <div class="phase p2" data-phase="2">
+      <div class="phase-node">
+        <div class="node-icon">🧩</div>
+        <div class="node-num">02</div>
       </div>
-    </div>
-
-    <!-- PHASE 4 -->
-    <div class="phase p4" onclick="toggle(this)">
-      <div class="phase-header">
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
-        <div class="connector" style="opacity:0"></div>
-        <div class="phase-node">
-          <div class="phase-icon">🤖</div>
-          <div class="phase-number">04</div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 1–4 · Parallel Track</div>
+            <div class="card-title">DSA Mastery — Interview Ready</div>
+            <div class="card-sub">Leetcode isn't enough. Understand the WHY behind every pattern.</div>
+          </div>
+          <div class="chevron">▾</div>
         </div>
-        <div class="connector"></div>
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 4–8 · AI-NATIVE</div>
-              <div class="phase-title">AI & ML Engineering Depth</div>
-              <div class="phase-subtitle">Not just using AI — understanding and building with it.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">LLMs</span>
-            <span class="tag">RAG</span>
-            <span class="tag">Agents</span>
-            <span class="tag">MLOps</span>
-            <span class="tag">Fine-tuning</span>
-          </div>
-          <div class="phase-body">
+        <div class="tags">
+          <span class="tag">Arrays</span>
+          <span class="tag">Trees</span>
+          <span class="tag">Graphs</span>
+          <span class="tag">Dynamic Programming</span>
+          <span class="tag">Sliding Window</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
             <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">🔮</div>
-                <div>
-                  <div class="topic-name">LLM Foundations</div>
-                  <div class="topic-detail">Transformers, attention, tokenization, RLHF, context windows, inference</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔗</div>
-                <div>
-                  <div class="topic-name">RAG & Vector Search</div>
-                  <div class="topic-detail">Embeddings, FAISS, Pinecone, chunking strategies, hybrid search, reranking</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🕵️</div>
-                <div>
-                  <div class="topic-name">AI Agents & MCP</div>
-                  <div class="topic-detail">Tool use, function calling, planning, memory, multi-agent systems</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🛠️</div>
-                <div>
-                  <div class="topic-name">AI Dev Tools</div>
-                  <div class="topic-detail">Claude Code, Cursor, GitHub Copilot, Windsurf — master agentic coding</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">📦</div>
-                <div>
-                  <div class="topic-name">Fine-tuning & MLOps</div>
-                  <div class="topic-detail">LoRA, PEFT, dataset curation, eval frameworks, model serving</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🏗️</div>
-                <div>
-                  <div class="topic-name">AI System Design</div>
-                  <div class="topic-detail">Prompt caching, latency optimization, cost tradeoffs, safety guardrails</div>
-                </div>
-              </div>
+              <div class="topic"><div class="t-icon">📊</div><div><div class="t-name">Data Structures</div><div class="t-detail">Arrays, strings, linked lists, stacks, queues, heaps, tries, union-find</div></div></div>
+              <div class="topic"><div class="t-icon">🌲</div><div><div class="t-name">Trees & Graphs</div><div class="t-detail">BST, AVL, segment trees, DFS/BFS, Dijkstra, Bellman-Ford, Kruskal</div></div></div>
+              <div class="topic"><div class="t-icon">🎯</div><div><div class="t-name">Core Patterns</div><div class="t-detail">Two pointers, sliding window, binary search, monotonic stack, backtracking</div></div></div>
+              <div class="topic"><div class="t-icon">🧮</div><div><div class="t-name">Dynamic Programming</div><div class="t-detail">Memoization, tabulation, knapsack, LCS, LIS, interval DP, bitmask DP</div></div></div>
+              <div class="topic"><div class="t-icon">🔢</div><div><div class="t-name">Math & Bit Manipulation</div><div class="t-detail">Modular arithmetic, combinatorics, GCD, bit tricks, XOR patterns</div></div></div>
+              <div class="topic"><div class="t-icon">🏆</div><div><div class="t-name">Target: 300+ Problems</div><div class="t-detail">~150 medium, ~80 hard. Neetcode 150 → Blind 75 → company-tagged</div></div></div>
             </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">📖 Anthropic Docs</span>
-              <span class="resource-pill">📖 LangChain Cookbook</span>
-              <span class="resource-pill">🎥 Andrej Karpathy</span>
-              <span class="resource-pill">🎥 Fast.ai</span>
-              <span class="resource-pill">📖 Hands-On ML — Géron</span>
-              <span class="resource-pill">🌐 LLMOps guide</span>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">🟡 LeetCode Premium</span>
+              <span class="rpill">🎥 Neetcode.io</span>
+              <span class="rpill">🎥 Abdul Bari Algorithms</span>
+              <span class="rpill">📖 Grokking Algorithms</span>
+              <span class="rpill">🏆 Codeforces Weekly</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- PHASE 5 -->
-    <div class="phase p5" onclick="toggle(this)">
-      <div class="phase-header">
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 5–10 · BUILD MODE</div>
-              <div class="phase-title">Projects That Open Doors</div>
-              <div class="phase-subtitle">Build things that are real, complex, and demonstrably impressive.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Full-Stack</span>
-            <span class="tag">AI-powered</span>
-            <span class="tag">Open Source</span>
-            <span class="tag">Real Users</span>
-          </div>
-          <div class="phase-body">
-            <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">💳</div>
-                <div>
-                  <div class="topic-name">Fintech AI Product</div>
-                  <div class="topic-detail">Payments, AI checkout agents, real-time recommendations (e.g. PineCone-style)</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔨</div>
-                <div>
-                  <div class="topic-name">Dev Tool / CLI</div>
-                  <div class="topic-detail">Build something devs use daily. AI code reviewer, diff-to-PR tool, smart linter</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🌐</div>
-                <div>
-                  <div class="topic-name">Distributed Mini-System</div>
-                  <div class="topic-detail">Build a toy Kafka, Redis, or key-value store from scratch in Go/Rust</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🤝</div>
-                <div>
-                  <div class="topic-name">Open Source Contributions</div>
-                  <div class="topic-detail">Contribute meaningful PRs to Next.js, LangChain, FastAPI, or Prisma</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">📊</div>
-                <div>
-                  <div class="topic-name">Platform / Marketplace</div>
-                  <div class="topic-detail">Multi-sided platform with real complexity: auth, billing, notifications, search</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">⚡</div>
-                <div>
-                  <div class="topic-name">Hackathon Velocity</div>
-                  <div class="topic-detail">Win 2–3 hackathons. Each win = portfolio proof + network + momentum</div>
-                </div>
-              </div>
-            </div>
-            <div class="resources-header">// Stack to master</div>
-            <div class="resource-list">
-              <span class="resource-pill">Next.js + TypeScript</span>
-              <span class="resource-pill">Go or Rust (backend)</span>
-              <span class="resource-pill">PostgreSQL + Redis</span>
-              <span class="resource-pill">Docker + K8s basics</span>
-              <span class="resource-pill">Vercel / Railway / AWS</span>
-              <span class="resource-pill">Claude API + Anthropic SDK</span>
-            </div>
-          </div>
-        </div>
-        <div class="connector"></div>
-        <div class="phase-node">
-          <div class="phase-icon">🚀</div>
-          <div class="phase-number">05</div>
-        </div>
-        <div class="connector" style="opacity:0"></div>
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
+    <!-- Phase 3 -->
+    <div class="phase p3" data-phase="3">
+      <div class="phase-node">
+        <div class="node-icon">🏛️</div>
+        <div class="node-num">03</div>
       </div>
-    </div>
-
-    <!-- PHASE 6 -->
-    <div class="phase p6" onclick="toggle(this)">
-      <div class="phase-header">
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
-        <div class="connector" style="opacity:0"></div>
-        <div class="phase-node">
-          <div class="phase-icon">📐</div>
-          <div class="phase-number">06</div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 3–6 · Architecture</div>
+            <div class="card-title">System Design — Think at Scale</div>
+            <div class="card-sub">Design systems that handle millions. Understand every tradeoff.</div>
+          </div>
+          <div class="chevron">▾</div>
         </div>
-        <div class="connector"></div>
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 8–14 · DEPTH</div>
-              <div class="phase-title">Big Tech Concepts & Depth Areas</div>
-              <div class="phase-subtitle">What separates senior from staff. Go from using to deeply understanding.</div>
-            </div>
-            <div class="chevron">▾</div>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Observability</span>
-            <span class="tag">Security</span>
-            <span class="tag">Performance</span>
-            <span class="tag">Reliability</span>
-          </div>
-          <div class="phase-body">
+        <div class="tags">
+          <span class="tag">Scalability</span>
+          <span class="tag">Databases</span>
+          <span class="tag">Caching</span>
+          <span class="tag">Messaging</span>
+          <span class="tag">Microservices</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
             <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">🔭</div>
-                <div>
-                  <div class="topic-name">Observability</div>
-                  <div class="topic-detail">Metrics, logs, traces (OpenTelemetry), SLOs/SLAs, alerting, runbooks</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🛡️</div>
-                <div>
-                  <div class="topic-name">Security Engineering</div>
-                  <div class="topic-detail">OWASP Top 10, OAuth 2.0, JWT, CSRF, XSS, secret management, zero trust</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">⚡</div>
-                <div>
-                  <div class="topic-name">Performance Engineering</div>
-                  <div class="topic-detail">Profiling, flame graphs, N+1 queries, latency percentiles, memory leaks</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🏭</div>
-                <div>
-                  <div class="topic-name">Infrastructure & DevOps</div>
-                  <div class="topic-detail">Kubernetes, Terraform, CI/CD pipelines, GitOps, deployment strategies</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🔄</div>
-                <div>
-                  <div class="topic-name">Software Design Patterns</div>
-                  <div class="topic-detail">SOLID, DDD, hexagonal arch, saga pattern, outbox pattern, strangler fig</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">📜</div>
-                <div>
-                  <div class="topic-name">Big Tech Papers</div>
-                  <div class="topic-detail">Read: Dynamo, Bigtable, MapReduce, Spanner, Borg, Dapper, Chubby</div>
-                </div>
-              </div>
+              <div class="topic"><div class="t-icon">🏗️</div><div><div class="t-name">Distributed Systems</div><div class="t-detail">CAP theorem, consistency models, Raft, Paxos, sharding, replication</div></div></div>
+              <div class="topic"><div class="t-icon">⚖️</div><div><div class="t-name">Load Balancing & Proxies</div><div class="t-detail">L4/L7 LB, rate limiting, circuit breakers, service mesh</div></div></div>
+              <div class="topic"><div class="t-icon">🗄️</div><div><div class="t-name">Storage Systems</div><div class="t-detail">SQL vs NoSQL, time series DBs, blob storage, columnar, LSM trees</div></div></div>
+              <div class="topic"><div class="t-icon">⚡</div><div><div class="t-name">Caching Strategies</div><div class="t-detail">Redis, Memcached, write-through/back, eviction policies, CDN patterns</div></div></div>
+              <div class="topic"><div class="t-icon">📨</div><div><div class="t-name">Messaging & Streaming</div><div class="t-detail">Kafka, RabbitMQ, event sourcing, CQRS, pub-sub vs queue</div></div></div>
+              <div class="topic"><div class="t-icon">🔍</div><div><div class="t-name">Real Design Cases</div><div class="t-detail">Design Twitter, YouTube, Uber, WhatsApp, Google Docs, Stripe</div></div></div>
             </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">📖 Google SRE Book (free)</span>
-              <span class="resource-pill">📖 The Phoenix Project</span>
-              <span class="resource-pill">🌐 papers.computer.org</span>
-              <span class="resource-pill">🎥 Hussein Nasser</span>
-              <span class="resource-pill">📖 Clean Architecture</span>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">📖 System Design Interview — Alex Xu</span>
+              <span class="rpill">📖 DDIA — Kleppmann</span>
+              <span class="rpill">🎥 ByteByteGo</span>
+              <span class="rpill">🎥 Arpit Bhayani</span>
+              <span class="rpill">🌐 highscalability.com</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- PHASE 7 -->
-    <div class="phase p7" onclick="toggle(this)">
-      <div class="phase-header">
-        <div class="phase-card">
-          <div class="phase-title-row">
-            <div class="phase-meta">
-              <div class="phase-duration">MONTH 10–18 · INTERVIEW SPRINT</div>
-              <div class="phase-title">Interview Preparation & Execution</div>
-              <div class="phase-subtitle">The final conversion layer. Systematic prep that doesn't leave things to chance.</div>
-            </div>
-            <div class="chevron">▾</div>
+    <!-- Phase 4 — AI (Von Restorff: visually distinct) -->
+    <div class="phase p4" data-phase="4" style="--pc: var(--c4)">
+      <div class="phase-node">
+        <div class="node-icon">🤖</div>
+        <div class="node-num">04</div>
+      </div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))" style="position:relative">
+        <div class="phase-topbar"></div>
+        <!-- Von Restorff: subtle glow border to make AI phase stand out -->
+        <div style="position:absolute;inset:0;border-radius:18px;background:radial-gradient(ellipse at 50% 0%,rgba(244,63,94,0.04),transparent 60%);pointer-events:none"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 4–8 · AI-Native ★ KEY DIFFERENTIATOR</div>
+            <div class="card-title">AI & ML Engineering Depth</div>
+            <div class="card-sub">Not just using AI — understanding and building with it at an engineering level.</div>
           </div>
-          <div class="tag-row">
-            <span class="tag">Behavioral</span>
-            <span class="tag">Mock Interviews</span>
-            <span class="tag">Negotiation</span>
-            <span class="tag">Networking</span>
-          </div>
-          <div class="phase-body">
+          <div class="chevron">▾</div>
+        </div>
+        <div class="tags">
+          <span class="tag">LLMs</span>
+          <span class="tag">RAG</span>
+          <span class="tag">Agents</span>
+          <span class="tag">Fine-tuning</span>
+          <span class="tag">MLOps</span>
+          <span class="tag">AI System Design</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
             <div class="topic-grid">
-              <div class="topic-item">
-                <div class="topic-icon">💬</div>
-                <div>
-                  <div class="topic-name">Behavioral (STAR)</div>
-                  <div class="topic-detail">Prepare 12+ stories. Leadership, conflict, failure, impact. Amazon LPs nailed.</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🎭</div>
-                <div>
-                  <div class="topic-name">Mock Interviews</div>
-                  <div class="topic-detail">Weekly mocks on Pramp, Interviewing.io, or with peers. Record yourself.</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🎯</div>
-                <div>
-                  <div class="topic-name">Company-specific Prep</div>
-                  <div class="topic-detail">Glassdoor + Blind + Leetcode tagged problems for each target company</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">💰</div>
-                <div>
-                  <div class="topic-name">Offer Negotiation</div>
-                  <div class="topic-detail">levels.fyi benchmarks, BATNA strategy, RSU vesting, competing offers</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🌐</div>
-                <div>
-                  <div class="topic-name">Network Building</div>
-                  <div class="topic-detail">LinkedIn outreach, referrals, tech community presence (GitHub, X, writing)</div>
-                </div>
-              </div>
-              <div class="topic-item">
-                <div class="topic-icon">🧪</div>
-                <div>
-                  <div class="topic-name">Take-Home & Live Coding</div>
-                  <div class="topic-detail">Practice explaining code live. Talk through tradeoffs. Ask clarifying questions.</div>
-                </div>
-              </div>
+              <div class="topic"><div class="t-icon">🔮</div><div><div class="t-name">LLM Foundations</div><div class="t-detail">Transformers, attention, tokenization, RLHF, context windows, inference</div></div></div>
+              <div class="topic"><div class="t-icon">🔗</div><div><div class="t-name">RAG & Vector Search</div><div class="t-detail">Embeddings, FAISS, Pinecone, chunking, hybrid search, reranking</div></div></div>
+              <div class="topic"><div class="t-icon">🕵️</div><div><div class="t-name">AI Agents & MCP</div><div class="t-detail">Tool use, function calling, planning, memory, multi-agent systems</div></div></div>
+              <div class="topic"><div class="t-icon">🛠️</div><div><div class="t-name">AI Dev Tools</div><div class="t-detail">Claude Code, Cursor, GitHub Copilot — master agentic coding workflows</div></div></div>
+              <div class="topic"><div class="t-icon">📦</div><div><div class="t-name">Fine-tuning & MLOps</div><div class="t-detail">LoRA, PEFT, dataset curation, eval frameworks, model serving at scale</div></div></div>
+              <div class="topic"><div class="t-icon">🏗️</div><div><div class="t-name">AI System Design</div><div class="t-detail">Prompt caching, latency optimization, cost tradeoffs, safety guardrails</div></div></div>
             </div>
-            <div class="resources-header">// Key Resources</div>
-            <div class="resource-list">
-              <span class="resource-pill">📖 Cracking the Coding Interview</span>
-              <span class="resource-pill">🌐 levels.fyi</span>
-              <span class="resource-pill">🌐 Interviewing.io</span>
-              <span class="resource-pill">🌐 Pramp</span>
-              <span class="resource-pill">📖 Never Split the Difference</span>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">📖 Anthropic Docs</span>
+              <span class="rpill">🎥 Andrej Karpathy</span>
+              <span class="rpill">🎥 Fast.ai</span>
+              <span class="rpill">📖 Hands-On ML — Géron</span>
+              <span class="rpill">🌐 LangChain Cookbook</span>
             </div>
           </div>
         </div>
-        <div class="connector"></div>
-        <div class="phase-node">
-          <div class="phase-icon">🏆</div>
-          <div class="phase-number">07</div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase p5" data-phase="5">
+      <div class="phase-node">
+        <div class="node-icon">🚀</div>
+        <div class="node-num">05</div>
+      </div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 5–10 · Build Mode</div>
+            <div class="card-title">Projects That Open Doors</div>
+            <div class="card-sub">Build things that are real, complex, and demonstrably impressive.</div>
+          </div>
+          <div class="chevron">▾</div>
         </div>
-        <div class="connector" style="opacity:0"></div>
-        <div style="flex:1;max-width:calc(50% - 54px)"></div>
+        <div class="tags">
+          <span class="tag">Full-Stack</span>
+          <span class="tag">AI-Powered</span>
+          <span class="tag">Open Source</span>
+          <span class="tag">Real Users</span>
+          <span class="tag">Hackathons</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
+            <div class="topic-grid">
+              <div class="topic"><div class="t-icon">💳</div><div><div class="t-name">Fintech AI Product</div><div class="t-detail">Payments, AI checkout agents, real-time recommendations (PineCone-style)</div></div></div>
+              <div class="topic"><div class="t-icon">🔨</div><div><div class="t-name">Dev Tool / CLI</div><div class="t-detail">Build something devs use daily. AI code reviewer, diff-to-PR, smart linter</div></div></div>
+              <div class="topic"><div class="t-icon">🌐</div><div><div class="t-name">Distributed Mini-System</div><div class="t-detail">Build a toy Kafka, Redis, or key-value store from scratch in Go/Rust</div></div></div>
+              <div class="topic"><div class="t-icon">🤝</div><div><div class="t-name">Open Source Contributions</div><div class="t-detail">Meaningful PRs to Next.js, LangChain, FastAPI, or Prisma</div></div></div>
+              <div class="topic"><div class="t-icon">📊</div><div><div class="t-name">Platform / Marketplace</div><div class="t-detail">Multi-sided with real complexity: auth, billing, notifications, search</div></div></div>
+              <div class="topic"><div class="t-icon">⚡</div><div><div class="t-name">Hackathon Velocity</div><div class="t-detail">Win 2–3 hackathons. Each win = portfolio proof + network + momentum</div></div></div>
+            </div>
+            <div class="res-label">// Stack to Master</div>
+            <div class="res-pills">
+              <span class="rpill">Next.js + TypeScript</span>
+              <span class="rpill">Go or Rust</span>
+              <span class="rpill">PostgreSQL + Redis</span>
+              <span class="rpill">Docker + K8s basics</span>
+              <span class="rpill">Claude API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase p6" data-phase="6">
+      <div class="phase-node">
+        <div class="node-icon">📐</div>
+        <div class="node-num">06</div>
+      </div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 8–14 · Depth</div>
+            <div class="card-title">Big Tech Concepts & Engineering Depth</div>
+            <div class="card-sub">What separates senior from staff. Go from using to deeply understanding.</div>
+          </div>
+          <div class="chevron">▾</div>
+        </div>
+        <div class="tags">
+          <span class="tag">Observability</span>
+          <span class="tag">Security</span>
+          <span class="tag">Performance</span>
+          <span class="tag">SRE / Reliability</span>
+          <span class="tag">Research Papers</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
+            <div class="topic-grid">
+              <div class="topic"><div class="t-icon">🔭</div><div><div class="t-name">Observability</div><div class="t-detail">Metrics, logs, traces (OpenTelemetry), SLOs/SLAs, alerting, runbooks</div></div></div>
+              <div class="topic"><div class="t-icon">🛡️</div><div><div class="t-name">Security Engineering</div><div class="t-detail">OWASP Top 10, OAuth 2.0, JWT, CSRF, XSS, secret management, zero trust</div></div></div>
+              <div class="topic"><div class="t-icon">⚡</div><div><div class="t-name">Performance Engineering</div><div class="t-detail">Profiling, flame graphs, N+1 queries, latency percentiles, memory leaks</div></div></div>
+              <div class="topic"><div class="t-icon">🏭</div><div><div class="t-name">Infrastructure & DevOps</div><div class="t-detail">Kubernetes, Terraform, CI/CD pipelines, GitOps, deployment strategies</div></div></div>
+              <div class="topic"><div class="t-icon">🔄</div><div><div class="t-name">Software Design Patterns</div><div class="t-detail">SOLID, DDD, hexagonal arch, saga pattern, outbox pattern, strangler fig</div></div></div>
+              <div class="topic"><div class="t-icon">📜</div><div><div class="t-name">Big Tech Papers</div><div class="t-detail">Dynamo, Bigtable, MapReduce, Spanner, Borg, Dapper, Chubby</div></div></div>
+            </div>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">📖 Google SRE Book (free)</span>
+              <span class="rpill">📖 The Phoenix Project</span>
+              <span class="rpill">🌐 papers.computer.org</span>
+              <span class="rpill">🎥 Hussein Nasser</span>
+              <span class="rpill">📖 Clean Architecture</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 7 — Serial Position: last = remembered (primacy + recency) -->
+    <div class="phase p7" data-phase="7">
+      <div class="phase-node">
+        <div class="node-icon">🏆</div>
+        <div class="node-num">07</div>
+      </div>
+      <div class="phase-card" onclick="toggle(this.closest('.phase'))">
+        <div class="phase-topbar"></div>
+        <div class="card-header">
+          <div class="card-meta">
+            <div class="card-duration">Month 10–18 · Interview Sprint</div>
+            <div class="card-title">Interview Preparation & Execution</div>
+            <div class="card-sub">The final conversion layer. Systematic prep that doesn't leave things to chance.</div>
+          </div>
+          <div class="chevron">▾</div>
+        </div>
+        <div class="tags">
+          <span class="tag">Behavioral</span>
+          <span class="tag">Mock Interviews</span>
+          <span class="tag">Negotiation</span>
+          <span class="tag">Networking</span>
+          <span class="tag">Offer Strategy</span>
+        </div>
+        <div class="phase-body">
+          <div class="body-inner">
+            <div class="topic-grid">
+              <div class="topic"><div class="t-icon">💬</div><div><div class="t-name">Behavioral (STAR)</div><div class="t-detail">Prepare 12+ stories. Leadership, conflict, failure, impact. Amazon LPs nailed.</div></div></div>
+              <div class="topic"><div class="t-icon">🎭</div><div><div class="t-name">Mock Interviews</div><div class="t-detail">Weekly mocks on Pramp, Interviewing.io, or peers. Record and review yourself.</div></div></div>
+              <div class="topic"><div class="t-icon">🎯</div><div><div class="t-name">Company-Specific Prep</div><div class="t-detail">Glassdoor + Blind + Leetcode tagged problems per target company</div></div></div>
+              <div class="topic"><div class="t-icon">💰</div><div><div class="t-name">Offer Negotiation</div><div class="t-detail">levels.fyi benchmarks, BATNA strategy, RSU vesting, competing offers</div></div></div>
+              <div class="topic"><div class="t-icon">🌐</div><div><div class="t-name">Network Building</div><div class="t-detail">LinkedIn outreach, referrals, tech community presence on GitHub + X</div></div></div>
+              <div class="topic"><div class="t-icon">🧪</div><div><div class="t-name">Live Coding Practice</div><div class="t-detail">Talk through tradeoffs out loud. Ask clarifying questions. Explain first.</div></div></div>
+            </div>
+            <div class="res-label">// Key Resources</div>
+            <div class="res-pills">
+              <span class="rpill">📖 Cracking the Coding Interview</span>
+              <span class="rpill">🌐 levels.fyi</span>
+              <span class="rpill">🌐 Interviewing.io</span>
+              <span class="rpill">🌐 Pramp</span>
+              <span class="rpill">📖 Never Split the Difference</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
   </div><!-- /timeline -->
 
-  <div class="cta-section">
-    <h2>The Meta-Skill: <span style="color:var(--accent1)">Build in Public</span></h2>
-    <p style="margin-bottom:24px">// Write about what you learn. Ship projects publicly. Your GitHub, blog, and X/LinkedIn are a second resume that compounds.</p>
-    <div class="stats-bar" style="justify-content:center; margin-bottom:0">
-      <div class="stat-chip">
-        <div class="dot" style="background:#00f5c4"></div>
-        <span class="label">Daily habit</span>
-        <span class="val">1 LC + 30min reading</span>
-      </div>
-      <div class="stat-chip">
-        <div class="dot" style="background:#6c6fff"></div>
-        <span class="label">Weekly</span>
-        <span class="val">1 System Design + 1 build session</span>
-      </div>
-      <div class="stat-chip">
-        <div class="dot" style="background:#f97316"></div>
-        <span class="label">Monthly</span>
-        <span class="val">1 blog post + 1 mock interview</span>
-      </div>
+  <!-- ── CTA ── -->
+  <div class="cta">
+    <h2>The Meta-Skill: <span>Build in Public</span></h2>
+    <p>Write about what you learn. Ship projects publicly. Your GitHub, blog, and X/LinkedIn are a second resume that compounds over time.</p>
+    <div class="habits">
+      <div class="habit"><div class="h-freq">Daily</div><div class="h-text">1 LC + 30min reading</div></div>
+      <div class="habit"><div class="h-freq">Weekly</div><div class="h-text">1 System Design + 1 build session</div></div>
+      <div class="habit"><div class="h-freq">Monthly</div><div class="h-text">1 blog post + 1 mock interview</div></div>
     </div>
   </div>
 
-</div>
+</div><!-- /wrap -->
 
 <script>
+  // ─── TOGGLE ───
   function toggle(phase) {
-    // Don't toggle if clicking inside phase-body
-    if (event.target.closest('.phase-body')) return;
+    const wasOpen = phase.classList.contains('open');
     phase.classList.toggle('open');
+    updateProgress();
   }
 
-  // Animate progress bar on load
-  window.addEventListener('load', () => {
-    // stagger fade-in on phases
-    document.querySelectorAll('.phase').forEach((el, i) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      setTimeout(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      }, 100 + i * 80);
+  function expandAll() {
+    document.querySelectorAll('.phase').forEach(p => p.classList.add('open'));
+    updateProgress();
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.phase').forEach(p => p.classList.remove('open'));
+    updateProgress();
+  }
+
+  // ─── PROGRESS TRACKER ───
+  function updateProgress() {
+    const all = document.querySelectorAll('.phase');
+    const open = document.querySelectorAll('.phase.open');
+    const pct = (open.length / all.length) * 100;
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-text').textContent = open.length + ' / ' + all.length + ' phases';
+  }
+
+  // ─── STAGGER ENTRANCE (Gestalt + reduced cognitive load) ───
+  const phases = document.querySelectorAll('.phase');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
     });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  phases.forEach((p, i) => {
+    p.style.transitionDelay = (i * 60) + 'ms';
+    observer.observe(p);
+  });
+
+  // Open Phase 1 on load (Serial Position: primacy)
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelector('.phase[data-phase="1"]').classList.add('open');
+      updateProgress();
+    }, 600);
   });
 </script>
 </body>
